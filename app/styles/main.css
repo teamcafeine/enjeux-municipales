@@ -1,5 +1,8 @@
-#map {
+.map {
 	height: 100%;
+	width: 50%;
+	float: left;
+	border: solid 1px Black;
 }
 
 #app-container {
@@ -8,8 +11,110 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
+	width: 100%;
 }
 
 body {
 	margin: 0;
+}
+
+#map-politique .leaflet-left {
+	/* Realign controls to the right (should be done using Leaflet parameters, but lacking time to plug it properly in the directive...) */
+	right: 0;
+	left: auto;
+	margin-right: 10px;
+}
+
+#geoform {
+	position: absolute;
+	width: 300px;
+	left: calc(50% - 150px);
+	top: 5px;
+}
+
+#geoform input {
+	width: 240px;
+	height: 46px;
+	line-height: 40px;
+	font-size: 36px;
+	opacity: 0.8;
+}
+
+#geoform input:focus {
+	opacity: 1;
+}
+
+#geoform button {
+	height: 46px;
+	vertical-align: top;
+	margin-left: -4px;
+}
+
+#top-panel {
+	height: 50px;
+	background-color: red;
+}
+
+#top-panel .choice-panel {
+	width: 50%;
+	display: inline-block;
+	float: left;
+}
+
+ul.choice {
+	list-style-type: none;
+}
+ul.choice li {
+	display: inline;
+}
+
+.tooltip-overlay {
+	width: 50%;
+	position: absolute;
+	bottom: 0px;
+	min-height: 30px;
+	background-color: white;
+	opacity: 0.9;
+	padding: 5px;
+}
+#tooltip-politique {
+	right: 0;
+}
+#tooltip-indicateur {
+	left: 0;
+}
+
+
+
+.spinning {
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 4000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: spin;
+    -moz-animation-duration: 4000ms;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+    -ms-animation-name: spin;
+    -ms-animation-duration: 4000ms;
+    -ms-animation-iteration-count: infinite;
+    -ms-animation-timing-function: linear;
+    
+    animation-name: spin;
+    animation-duration: 4000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@-moz-keyframes spin {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
 }

@@ -84,7 +84,10 @@
                 /*  Input: a GeoJSON object of type Polygon
                     Output: a Polygon
                  */
-                var coordinates = geoJsonPolygon.coordinates[0];
+                var coordinates = angular.copy(geoJsonPolygon.coordinates[0]);
+                if (geoJsonPolygon.type === 'MultiPolygon') {
+                    coordinates = coordinates[0];
+                }
                 var polygonBounds = [];
                 for (var i=0; i<coordinates.length; i++) {
                     var bound = angular.copy(coordinates[i]);
