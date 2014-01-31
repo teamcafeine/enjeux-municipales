@@ -1,13 +1,13 @@
 .map {
 	height: 100%;
-	width: 50%;
+	width: 100%;
 	float: left;
 	border: solid 1px Black;
 }
 
 #app-container {
 	position: absolute;
-	top: 50px;
+	top: 100px;
 	bottom: 0;
 	left: 0;
 	right: 0;
@@ -18,18 +18,12 @@ body {
 	margin: 0;
 }
 
-#map-politique .leaflet-left {
-	/* Realign controls to the right (should be done using Leaflet parameters, but lacking time to plug it properly in the directive...) */
-	right: 0;
-	left: auto;
-	margin-right: 10px;
-}
-
 #geoform {
 	position: absolute;
 	width: 300px;
 	left: calc(50% - 150px);
-	top: 5px;
+	top: 210px;
+	z-index: 1;
 }
 
 #geoform input {
@@ -51,49 +45,39 @@ body {
 }
 
 #top-panel {
-	height: 50px;
-	background-color: red;
+	height: 100px;
 }
 
-#top-panel .choice-panel {
-	width: 50%;
-	display: inline-block;
+.choice {
+	cursor: pointer;
 	float: left;
+	display: inline-block;
+	width: 33%;
+	text-align: center;
+	border-bottom: solid 1px Black;
+}
+.choice-active {
+	border-bottom: solid 3px Red;
+}
+.choice-header {
+	text-transform: capitalize;
+	font-size: 32px;
+}
+.choice-subtext {
+	font-size: 16px;
+	color: #CC0000;
 }
 
-ul.choice {
-	list-style-type: none;
-}
-ul.choice li {
-	display: inline;
-}
-
-.tooltip-overlay {
-	width: 50%;
+#tooltip-panel {
+	width: 200px;
 	position: absolute;
-	bottom: 0px;
+	right: 20px;
+	top: 20px;
 	min-height: 50px;
 	background-color: white;
 	opacity: 0.9;
 	padding: 10px;
 }
-#tooltip-politique {
-	right: 0;
-}
-#tooltip-indicateur {
-	left: 0;
-}
-
-.tooltip-overlay .where {
-	font-size: 16px;
-	font-weight: bold;
-}
-
-.tooltip-overlay .number {
-	font-size: 16px;
-	color: #333;
-}
-
 
 
 .spinning {
@@ -127,4 +111,54 @@ ul.choice li {
 @keyframes spin {
     from {transform:rotate(0deg);}
     to {transform:rotate(360deg);}
+}
+
+.tt-dropdown-menu {
+	/*width: 422px;*/
+	margin-top: 12px;
+	padding: 8px 0;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+	-webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+	-moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+	box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion {
+	padding: 3px 20px;
+	font-size: 18px;
+	line-height: 24px;
+}
+
+.tt-suggestion.tt-is-under-cursor {
+	color: #fff;
+	background-color: #0097cf;
+}
+#bandeau {
+		background-color: #333;
+		position: absolute;
+		height: 100px;
+		top: 0;
+		padding: 20px;
+}
+.bandeau-title {
+	font-size: 24px;
+	color: #eee;
+
+}
+.subtext {
+font-size: 24px;
+	color: #ccc;
+	display: inline-block;
+	float: left;
+	width: 300px;
+}
+.chapo {
+color: #ccc;
+display: inline-block;
+width: calc(100% - 300px);
 }

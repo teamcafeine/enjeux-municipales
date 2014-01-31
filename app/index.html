@@ -21,62 +21,58 @@
         <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
     </head>
     <body ng-app="enjeux" ng-controller="MainCtrl">
-        <!--[if lt IE 10]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
 
-
-        <div class="navbar navbar-inverse navbar-top" role="navigation">
-          <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="#">Blabla</a>
+        <div id="bandeau">
+            <div class="bandeau-title">Municipales 2014</div>
+            <div class="subtext">Comment va ma ville ?</div>
+            <div class="chapo">
+            A la veille des municipales, comment se porte ma ville en termes d'emploi, de sécurité et de dépenses publiques. Les trois préoccupations principales des Français pour ces élections <a target="_blank" href="http://www.scribd.com/doc/132787422/Etude-Harris-Interactive-Les-Francais-et-les-municipales">selon un sondage Harris Interactive</a>.
             </div>
-            </div><!--/.nav-collapse -->
-          </div>
         </div>
             
-        <form ng-submit="search(query)" id="geoform">
-            <input type="text" placeholder="Ma ville" ng-model="query">
+        <form ng-submit="search(query.city)" id="geoform">
+            <input type="text" id="city-query" autofocus placeholder="Ma ville" ng-model="query.city">
             <button type="submit" class="btn btn-success"><i ng-class="{'glyphicon glyphicon-search': !geocoding, 'glyphicon glyphicon-refresh spinning': geocoding}"></i></button>
         </form>
 
         <div id="app-container">
 
             <div id="top-panel">
-                <div class="choice-panel choix-indicateur">
-                    <ul class="choice">
-                        <li>Emploi</li>
-                        <li>Dépenses publiques</li>
-                        <li>Sécurité</li>
-                    </ul>
-                </div>
-                <div class="choice-panel choix-politique">
-                    <ul class="choice">
-                        <li>Nicolas Sarkozy</li>
-                        <li>François Hollande</li>
-                        <li>Jacques Cheminade</li>
-                    </ul>
-                </div>
-                <div id="explications">
-                <div class="summary">Explications...</div>
-                <div class="long">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </div>
+                <div class="choice-list">
+                    <div ng-class="{'choice-active': maps.indicateur.activeTheme == 'emploi'}" class="choice" ng-click="switchTheme('emploi')">
+                        <div class="choice-header">Emploi</div>
+                        <div class="choice-subtext">Taux de chômage</div>
+                    </div>
+                    <div ng-class="{'choice-active': maps.indicateur.activeTheme == 'insecurite'}" class="choice" ng-click="switchTheme('insecurite')">
+                        <div class="choice-header">Sécurité</div>
+                        <div class="choice-subtext">Nombre de crimes et délits constatés</div>
+                    </div>
+                    <div ng-class="{'choice-active': maps.indicateur.activeTheme == 'endettement'}" class="choice" ng-click="switchTheme('endettement')">
+                        <div class="choice-header">Dépenses publiques</div>
+                        <div class="choice-subtext">Endettement par habitant</div>
+                    </div>
                 </div>
             </div>
 
 
         
             <div id="map-indicateur" class="map" leaflet-map map-name="indicateur"></div>
-            <div id="map-politique" class="map" leaflet-map map-name="politique"></div>
-            <div id="tooltip-indicateur" class="tooltip-overlay">bla</div>
-            <div id="tooltip-politique" class="tooltip-overlay">bla</div>
+            <div id="tooltip-panel" ng-show="tooltipData">
+                <dl>
+                <dt>Commune</dt>
+                <dd>{{ tooltipData.ville }}</dd>
+                <dt>Département</dt>
+                 <dd>{{ tooltipData.departement}} ({{ tooltipData.codeDepartement }})</dd>
+                <dt>Région</dt>
+                <dd>{{ tooltipData.region }}</dd>
+                <hr />
+                <dt>Moyenne commune</dt> <dd>{{tooltipNumericData.commune}}</dd>
+                <dt>Moyenne département</dt> <dd>{{tooltipNumericData.dept}}</dd>
+                <dt>Moyenne région</dt> <dd>{{tooltipNumericData.region}}</dd>
+
+                <p ng-bind="getExplication()" style="color: #333; margin-top: 20px;"></p>
+
+            </div>
 
         </div>
 
@@ -104,11 +100,31 @@
 
         <script src="bower_components/angular/angular.min.js"></script>
         <script src="vendor/leaflet/leaflet.js"></script>
+        <script src="http://twitter.github.com/hogan.js/builds/2.0.0/hogan-2.0.0.js"></script>
+        <script src="bower_components/typeahead.js/dist/typeahead.min.js"></script>
+
 
 
         <!-- build:js({app,.tmp}) scripts/main.js -->
         <script src="scripts/geoutils.js"></script>
         <script src="scripts/app.js"></script>
         <!-- endbuild -->
+
+        <script type="text/javascript">
+        $(document).ready(function() {
+            console.log('c', $('#city-query'));
+            $('#city-query').typeahead({                                
+                  name: 'cities',                                                          
+                  prefetch: 'scripts/cities.json',                            
+                  limit: 10,
+  //                 template: [
+  //   '<p class="repo-language">{{language}}</p>',
+  //   '<p class="repo-name">{{name}}</p>',
+  //   '<p class="repo-description">{{description}}</p>'
+  // ].join(''),
+  // engine: Hogan                                                            
+                });
+        });
+        </script>
 </body>
 </html>

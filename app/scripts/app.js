@@ -20,10 +20,6 @@ angular.module('enjeux', [])
 				scope.maps[attrs.mapName].map = scope.map;
 				scope.params = scope.maps[attrs.mapName];
 
-				scope.setTooltip = function(text) {
-					document.getElementById(scope.params.tooltip).innerHTML = text;
-				}
-
 
 			},
 			controller: function($scope, $http, $q) {
@@ -31,7 +27,7 @@ angular.module('enjeux', [])
 					return $scope.params.themes[$scope.params.activeTheme];
 				}
 
-				var prepareCluster = function(layerGroup, cluster, min, max) {
+				var prepareCluster = function(layerGroup, cluster, min, max, color) {
 					// max = 600
 					// current = 
 					// -> 100
@@ -47,7 +43,7 @@ angular.module('enjeux', [])
 					var layer = new L.GeoJSON(cluster.cluster, {
                             style: {
                                 color: '#000000',
-                                fillColor: '#2ca25f',
+                                fillColor: color,
                                 fillOpacity: opacity,
                                 stroke: true,
                                 weight: 2
@@ -59,23 +55,23 @@ angular.module('enjeux', [])
 
 					var geofilter = ODS.GeoFilter.getGeoJSONPolygonAsPolygonParameter(cluster.cluster);
 
-					layer.on('mouseover', function(e) {
-						if (getActiveTheme().granularity === 'departement' || $scope.map.getZoom() <= 10) {
-							// Departement
-							$http({
-								method: 'GET',
-								url: 'http://datamunicipales.opendatasoft.com/api/records/1.0/search',
-								params: {
-									dataset: 'geoflar-departements',
-									"geofilter.polygon": geofilter
-								}
-							}).success(function(data) {
-								$scope.setTooltip('<span class="where">' + data.records[0].fields.nom_dept + ' (' + data.records[0].fields.nom_region + ') :</span> <span class="number">' + getActiveTheme().numberTemplate.replace('{x}', cluster.series.serie1) + '</span>');
-							})
-						} else {
-							// Commune
-						}
-					})
+					// layer.on('mouseover', function(e) {
+					// 	if (getActiveTheme().granularity === 'departement' || $scope.map.getZoom() <= 10) {
+					// 		// Departement
+					// 		$http({
+					// 			method: 'GET',
+					// 			url: 'http://datamunicipales.opendatasoft.com/api/records/1.0/search',
+					// 			params: {
+					// 				dataset: 'geoflar-departements',
+					// 				"geofilter.polygon": geofilter
+					// 			}
+					// 		}).success(function(data) {
+					// 			$scope.setTooltip('<span class="where">' + data.records[0].fields.nom_dept + ' (' + data.records[0].fields.nom_region + ') :</span> <span class="number">' + getActiveTheme().numberTemplate.replace('{x}', cluster.series.serie1) + '</span>');
+					// 		})
+					// 	} else {
+					// 		// Commune
+					// 	}
+					//})
 					layerGroup.addLayer(layer);
 				}
 
@@ -135,7 +131,7 @@ angular.module('enjeux', [])
 						var layerGroup = new L.LayerGroup();
 						for (var i=0; i<data.clusters.length; i++) {
 							var cluster = data.clusters[i];
-							prepareCluster(layerGroup, cluster, min, max);
+							prepareCluster(layerGroup, cluster, min, max, getActiveTheme().color);
 						}
 						layerGroup.addTo($scope.map);
 		                if ($scope.layerGroup) {
@@ -149,13 +145,20 @@ angular.module('enjeux', [])
 
 				$scope.$watch('map', function(nv, ov) {
 					if (nv) {
-						$scope.refresh(nv.getBounds());
+						if (!$scope.query.city || $scope.query.city == '') {
+							console.log('REFRESH', $scope.query.city);
+							$scope.refresh(nv.getBounds());
+						}
 					}
+				});
+				$scope.$watch('params.activeTheme', function() {
+					$scope.refresh($scope.map.getBounds(), true);
 				});
 			}
 		}
 	})
 	.controller('MainCtrl', function($scope, $http) {
+		$scope.query = {city: ''};
 		$scope.themes = {
 			'demographie': {
 				datasetid: 'correspondance-code-insee-code-postal',
@@ -166,83 +169,209 @@ angular.module('enjeux', [])
 				datasetid: 'base-communale-des-zones-demploi-1',
 				weightField: 'taux_chomage',
 				weightFunction: 'AVG'
-			},
-			'candidat_sarkozy': {
-
 			}
 		};
 
-		
-
 		$scope.maps = {
-			'politique': {
-				'tooltip': 'tooltip-politique',
-				'map': null,
-				'activeTheme': 'sarkozy',
-				'themes': {
-					'sarkozy': {
-						datasetid: 'resultat_presidentielle',
-						weightField: 'voix_exp',
-						weightFunction: 'AVG',
-						searchOptions: {
-							'refine.nom': 'SARKOZY'
-						}
-					}
-				}
-			},
+			// 'politique': {
+			// 	'tooltip': 'tooltip-politique',
+			// 	'map': null,
+			// 	'activeTheme': 'sarkozy',
+			// 	'themes': {
+			// 		'sarkozy': {
+			// 			datasetid: 'resultat_presidentielle',
+			// 			weightField: 'voix_exp',
+			// 			weightFunction: 'AVG',
+			// 			searchOptions: {
+			// 				'refine.nom': 'SARKOZY'
+			// 			}
+			// 		}
+			// 	}
+			// },
 			'indicateur': {
-				'tooltip': 'tooltip-indicateur',
 				'map': null,
-				'activeTheme': 'insecurite',
+				'activeTheme': 'endettement',
 				'themes': {
-					'demographie': {
-						datasetid: 'correspondance-code-insee-code-postal',
-						weightField: 'population',
-						weightFunction: 'SUM',
-						numberTemplate: '{x} habitants'
-					},
+					// 'demographie': {
+					// 	datasetid: 'correspondance-code-insee-code-postal',
+					// 	weightField: 'population',
+					// 	weightFunction: 'SUM',
+					// 	numberTemplate: '{x} habitants'
+					// },
 					'emploi': {
 						datasetid: 'base-communale-des-zones-demploi-1',
 						weightField: 'taux_chomage',
 						weightFunction: 'AVG',
-						numberTemplate: '{x} %'
+						numberTemplate: '{x} %',
+						color: '#2ca25f',
+						explication: "Taux de chômage par zone d'emploi en décembre 2012 (Source : Insee)"
 					},
 					'endettement': {
 						datasetid: 'endettement',
 						weightField: 'dette_par_pers',
 						weightFunction: 'AVG',
-						numberTemplate: '{x} %'
+						numberTemplate: '{x} %',
+						color: '#2c7fb8',
+						explication: "Endettement par habitants en 2012 (Source : DGFIP/Regards citoyens)"
 					},
 					'insecurite': {
 						datasetid: 'insecurite',
 						weightField: 'ratio_insecurite',
 						weightFunction: 'AVG',
 						granularity: 'departement',
-						numberTemplate: '{x} %'
+						numberTemplate: '{x} %',
+						color: '#f03b20',
+						explication: "Nombre de crimes et délits constatés rapporté à la population du département en août 2012 (Source : INHESJ/data.gouv.fr)"
 					}
 				}
 			}
 		}
 
+		var computeTooltipNumber = function(indicateur, code_commune, code_dept, code_reg) {
+			var result = {
+				'dept': null,
+				'commune': null
+			}
+			var theme = $scope.maps.indicateur.themes[indicateur];
+			
+			$http({
+				url: 'http://datamunicipales.opendatasoft.com/api/records/1.0/analyze',
+				method: 'GET',
+				params: {
+					'q': 'code_reg:"' + code_reg + '"',
+					'dataset': theme.datasetid,
+					'x': 'code_reg',
+					'y.serie1.expr': theme.weightField,
+					'y.serie1.func': theme.weightFunction
+				}
+			}).success(function(data) {
+				result.region = data[0].serie1;
+			});
+
+
+			$http({
+				url: 'http://datamunicipales.opendatasoft.com/api/records/1.0/analyze',
+				method: 'GET',
+				params: {
+					'q': 'code_dept:"' + code_dept + '"',
+					'dataset': theme.datasetid,
+					'x': 'code_dept',
+					'y.serie1.expr': theme.weightField,
+					'y.serie1.func': theme.weightFunction
+				}
+			}).success(function(data) {
+				result.dept = data[0].serie1;
+			});
+
+			if (theme.granularity !== 'departement') {
+				$http({
+					url: 'http://datamunicipales.opendatasoft.com/api/records/1.0/analyze',
+					method: 'GET',
+					params: {
+						'q': 'code_commune:"' + code_commune + '"',
+						'dataset': theme.datasetid,
+						'x': 'code_commune',
+						'y.serie1.expr': theme.weightField,
+						'y.serie1.func': theme.weightFunction
+					}
+				}).success(function(data) {
+					result.commune = data[0].serie1;
+				});
+			}
+			return result;
+
+			// $http({
+			// 	'q': 'nom_comm:"' + query + '"',
+			// 	'dataset': getActiveTheme().datasetid,
+			// 	'x': 'code_re',
+			// 	'y.serie1.expr': getActiveTheme().weightField
+			// 	'y.serie1.func': getActiveTheme().weightFunction
+			// }).success(function(data) {
+			// 	console.log(data);
+			// });
+		}
+
+		$scope.switchTheme = function(theme) {
+			$scope.maps.indicateur.activeTheme = theme;
+			if ($scope.city) {
+				$scope.tooltipNumericData = computeTooltipNumber($scope.maps.indicateur.activeTheme, $scope.city.insee, $scope.city.code_dept, $scope.city.code_reg);
+				$scope.cityShape.setStyle({
+					color: 'red',
+	                fillColor: $scope.maps.indicateur.themes[theme].color,
+	                fillOpacity: 0.2,
+	                stroke: true,
+	                weight: 2
+	            });
+			}
+		}
+
+		$scope.getExplication = function() {
+			return $scope.maps.indicateur.themes[$scope.maps.indicateur.activeTheme].explication;
+		}
+
 		$scope.search = function(query) {
 			if (query && query !== '') {
-				$scope.geocoding = true;
+				// Step 1 - zoom the map to it
 				$http({
 					method: 'GET',
-					url: 'http://nominatim.openstreetmap.org/search',
+					url: 'http://datamunicipales.opendatasoft.com/api/records/1.0/search',
 					params: {
-						q: query + ' France',
-						format: 'json'
+						dataset: 'geoflar-communes',
+						q: 'nom_comm:"' + query + '"'
 					}
-
 				}).success(function(data) {
-					$scope.geocoding = false;
-					console.log(data[0]);
-					$scope.maps.indicateur.map.fitBounds([
-						[data[0].boundingbox[0], data[0].boundingbox[2]], 
-						[data[0].boundingbox[1], data[0].boundingbox[3]], 
-						]);
+					var values = data.records[0].fields
+					var shape = values.geom;
+					var cityShape = new L.GeoJSON(shape, {
+                        style: {
+                            color: 'red',
+                            fillColor: $scope.maps.indicateur.themes[$scope.maps.indicateur.activeTheme].color,
+                            fillOpacity: 0.2,
+                            stroke: true,
+                            weight: 6
+                        }
+					});
+					if ($scope.cityShape) {
+						$scope.maps.indicateur.map.removeLayer($scope.cityShape);
+					}
+					$scope.cityShape = cityShape;
+					$scope.maps.indicateur.map.addLayer(cityShape);
+					$scope.maps.indicateur.map.fitBounds(cityShape.getBounds());
+
+					$scope.city = {
+						insee: values.code_commune,
+						departement: values.code_dept,
+						code_reg: values.code_reg
+					} 
+
+					$scope.tooltipData = {
+						ville: query,
+						departement: values.nom_dept,
+						codeDepartement: values.code_dept,
+						region: values.nom_region
+					}
+					$scope.tooltipNumericData = computeTooltipNumber($scope.maps.indicateur.activeTheme, values.code_commune, values.code_dept, values.code_reg);
 				});
+
+				// Step 2
+
+				// $scope.geocoding = true;
+				// $http({
+				// 	method: 'GET',
+				// 	url: 'http://nominatim.openstreetmap.org/search',
+				// 	params: {
+				// 		q: query + ' France',
+				// 		format: 'json'
+				// 	}
+
+				// }).success(function(data) {
+				// 	$scope.geocoding = false;
+				// 	console.log(data[0]);
+				// 	$scope.maps.indicateur.map.fitBounds([
+				// 		[data[0].boundingbox[0], data[0].boundingbox[2]], 
+				// 		[data[0].boundingbox[1], data[0].boundingbox[3]], 
+				// 		]);
+				// });
 			} else {
 				$scope.maps.indicateur.map.fitBounds([
 					[51.754240074033525,-6.481933593749999],
@@ -251,24 +380,15 @@ angular.module('enjeux', [])
 			}
 		}
 
-		var areMapsSync = function(map1, map2) {
-			return angular.equals(map1.getZoom(), map2.getZoom()) && angular.equals(map1.getCenter(), map2.getCenter());
-		}
-
-		var unwatch = $scope.$watch('maps', function(nv, ov) {
-			if (nv.politique.map && nv.indicateur.map) {
-				nv.politique.map.on('moveend', function(e) {
-					if (!areMapsSync(nv.indicateur.map, nv.politique.map)) {
-						nv.indicateur.map.setView(nv.politique.map.getCenter(), nv.politique.map.getZoom());
-					}
-				});
-				nv.indicateur.map.on('moveend', function(e) {
-					if (!areMapsSync(nv.indicateur.map, nv.politique.map)) {
-						nv.politique.map.setView(nv.indicateur.map.getCenter(), nv.indicateur.map.getZoom());
-					}
-				});
-				unwatch();
-			}
-		})
-
-	});
+	})
+	.directive('autofocus', function(){
+        /*
+         This directive applies the focus on the holding element upon page load.
+         */
+        return {
+            restrict: 'A',
+            link: function(scope, element) {
+            	element[0].focus();
+            }
+        };
+    });
