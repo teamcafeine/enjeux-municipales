@@ -66,11 +66,11 @@
                 <dt>Région</dt>
                 <dd>{{ tooltipData.region }}</dd>
                 <hr />
-                <dt>Moyenne commune</dt> <dd>{{tooltipNumericData.commune}}</dd>
+                <dt style="color: #B70F0A">Moyenne commune</dt> <dd style="color: #B70F0A">{{tooltipNumericData.commune}}</dd>
                 <dt>Moyenne département</dt> <dd>{{tooltipNumericData.dept}}</dd>
                 <dt>Moyenne région</dt> <dd>{{tooltipNumericData.region}}</dd>
 
-                <p ng-bind="getExplication()" style="color: #333; margin-top: 20px;"></p>
+                <p ng-bind="getExplication()" style="color: #333; margin-top: 20px; font-style: italic; font-weight: bold;"></p>
 
             </div>
 
