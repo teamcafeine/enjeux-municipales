@@ -72,16 +72,26 @@ ul.choice li {
 	width: 50%;
 	position: absolute;
 	bottom: 0px;
-	min-height: 30px;
+	min-height: 50px;
 	background-color: white;
 	opacity: 0.9;
-	padding: 5px;
+	padding: 10px;
 }
 #tooltip-politique {
 	right: 0;
 }
 #tooltip-indicateur {
 	left: 0;
+}
+
+.tooltip-overlay .where {
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.tooltip-overlay .number {
+	font-size: 16px;
+	color: #333;
 }
 
 

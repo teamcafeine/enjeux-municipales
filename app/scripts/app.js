@@ -70,7 +70,7 @@ angular.module('enjeux', [])
 									"geofilter.polygon": geofilter
 								}
 							}).success(function(data) {
-								$scope.setTooltip(data.records[0].fields.nom_dept + ' (' + data.records[0].fields.nom_region + ') : ' + cluster.series.serie1);
+								$scope.setTooltip('<span class="where">' + data.records[0].fields.nom_dept + ' (' + data.records[0].fields.nom_region + ') :</span> <span class="number">' + getActiveTheme().numberTemplate.replace('{x}', cluster.series.serie1) + '</span>');
 							})
 						} else {
 							// Commune
@@ -198,23 +198,27 @@ angular.module('enjeux', [])
 					'demographie': {
 						datasetid: 'correspondance-code-insee-code-postal',
 						weightField: 'population',
-						weightFunction: 'SUM'
+						weightFunction: 'SUM',
+						numberTemplate: '{x} habitants'
 					},
 					'emploi': {
 						datasetid: 'base-communale-des-zones-demploi-1',
 						weightField: 'taux_chomage',
-						weightFunction: 'AVG'
+						weightFunction: 'AVG',
+						numberTemplate: '{x} %'
 					},
 					'endettement': {
 						datasetid: 'endettement',
 						weightField: 'dette_par_pers',
-						weightFunction: 'AVG'
+						weightFunction: 'AVG',
+						numberTemplate: '{x} %'
 					},
 					'insecurite': {
 						datasetid: 'insecurite',
 						weightField: 'ratio_insecurite',
 						weightFunction: 'AVG',
-						granularity: 'departement'
+						granularity: 'departement',
+						numberTemplate: '{x} %'
 					}
 				}
 			}
