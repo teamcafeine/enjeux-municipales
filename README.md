@@ -1,3 +1,4 @@
+
 Municipales 2014 - Comment va ma ville ?
 ==================
 
@@ -12,14 +13,16 @@ Conformément au réglement du Hackathon, le code source du projet est librement
 [Les données utilisées, ainsi que les API utilisées par l'application, sont disponibles ici.][4] Les jeux de données sont sous **[Licence Ouverte (Etalab)][5]**.
 
 **La Team Caféine:**
-@VincentLeble (Nouvelle République)
-@CecileLG (Netvibes)
-@remi_lejn (OpenDataSoft)
-@benrict (OpenDataSoft)
+
+ - @VincentLeble (Nouvelle République) 
+ - @CecileLG (Netvibes) 
+ - @remi_lejn (OpenDataSoft) 
+ - @benrict (OpenDataSoft)
 
 #### Notes sur le code du projet
 
 La structure de l'application est une page web utilisant [AngularJS][6] pour afficher les données sur une carte via [LeafletJS][7]. Les données sont stockées sur un espace de la plateforme [OpenDataSoft][8] avec une granularité à la commune, et consommées via une API fournissant des clusters basées sur un découpage régional/départemental/communal ainsi que l'agrégation des données numériques pour ce cluster (par exemple la moyenne du taux d'endettement pour la région/département/commune).
+
 La qualité du code côté client est considérée comme "plus que perfectible" pour des raisons de "course contre la montre", dont on peut apprécier le paroxisme par la présence de styles CSS directement embarqués dans le HTML, et commités à 20 secondes de la fin du concours. Le code a été conservé tel quel, mais pourra éventuellement être nettoyé plus tard pour terminer la concrétisation de l'idée originale du projet.
 
 
